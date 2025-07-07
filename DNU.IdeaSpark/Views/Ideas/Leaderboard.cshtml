@@ -1,0 +1,28 @@
+﻿@model List<DNU.IdeaSpark.Models.ViewModels.Ideas.LeaderboardUserViewModel>
+
+@{
+    ViewData["Title"] = "Bảng xếp hạng đóng góp";
+}
+
+<div class="container mt-4">
+    <h3 class="text-primary mb-3">Bảng xếp hạng thành viên tích cực</h3>
+    <table class="table table-striped table-bordered">
+        <thead class="table-light">
+        <tr>
+            <th>Hạng</th>
+            <th>Thành viên</th>
+            <th>Điểm</th>
+        </tr>
+        </thead>
+        <tbody>
+        @for (int i = 0; i < Model.Count; i++)
+        {
+            <tr>
+                <td>@(i + 1)</td>
+                <td>@Model[i].FullName</td>
+                <td>@Model[i].Points</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

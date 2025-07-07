@@ -1,0 +1,135 @@
+﻿@model IEnumerable<DNU.IdeaSpark.Models.Entities.IdeaCategory>
+
+@{
+ViewData["Title"] = "Quản lý Danh mục";
+Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-primary text-white fw-bold fs-5">
+        <i class="bi bi-tags-fill"></i> Quản lý Danh mục Ý tưởng
+    </div>
+    <div class="card-body">
+        <div class="row g-4">
+            <div class="col-md-7 border-end">
+                <h5 class="mb-3 text-primary"><i class="bi bi-list-ul"></i> Danh sách danh mục</h5>
+                <table class="table table-bordered table-hover align-middle">
+                    <thead class="table-light">
+                    <tr>
+                        <th style="width:60px;">#</th>
+                        <th>Tên danh mục</th>
+                        <th style="width:135px;" class="text-center">Chức năng</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @if (!Model.Any())
+                    {
+                    <tr>
+                        <td colspan="3" class="text-center text-muted">Chưa có danh mục nào.</td>
+                    </tr>
+                    }
+                    else
+                    {
+                    var idx = 1;
+                    foreach (var category in Model)
+                    {
+                    <tr>
+                        <td>@idx</td>
+                        <td id="cat-name-@category.CategoryId">
+                            <span class="cat-label">@category.Name</span>
+                            <form class="d-none edit-form" method="post" asp-action="Edit" asp-route-id="@category.CategoryId" style="display:inline;">
+                                @Html.AntiForgeryToken()
+                                <div class="input-group input-group-sm">
+                                    <input type="hidden" name="CategoryId" value="@category.CategoryId" />
+                                    <input type="text" name="Name" class="form-control" value="@category.Name" required />
+                                    <button type="submit" class="btn btn-success px-2" title="Lưu"><i class="bi bi-check-lg"></i></button>
+                                    <button type="button" class="btn btn-secondary px-2 cancel-edit" title="Hủy"><i class="bi bi-x-lg"></i></button>
+                                </div>
+                            </form>
+                        </td>
+                        <td class="text-center">
+                            <button type="button" class="btn btn-warning btn-sm px-2 edit-cat" title="Sửa"
+                                    data-id="@category.CategoryId"><i class="bi bi-pencil-square"></i></button>
+                        </td>
+                    </tr>
+                    idx++;
+                    }
+                    }
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-5">
+                <h5 class="mb-3 text-primary"><i class="bi bi-plus-circle-fill"></i> Thêm danh mục mới</h5>
+                <form method="post" asp-action="Create" class="needs-validation" novalidate>
+                    @Html.AntiForgeryToken()
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Tên danh mục</label>
+                        <input name="name" id="name" class="form-control" placeholder="Nhập tên danh mục mới..." required />
+                        <div class="invalid-feedback">Vui lòng nhập tên danh mục.</div>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-plus-circle"></i> Thêm danh mục
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    // Bootstrap validation
+    (() => {
+        'use strict'
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.from(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })();
+
+    // Sửa inline danh mục
+    document.querySelectorAll('.edit-cat').forEach(btn => {
+        btn.addEventListener('click', function () {
+            var id = this.getAttribute('data-id');
+            var cell = document.getElementById('cat-name-' + id);
+            cell.querySelector('.cat-label').classList.add('d-none');
+            cell.querySelector('.edit-form').classList.remove('d-none');
+            cell.querySelector('.edit-form input[type="text"]').focus();
+        });
+    });
+    // Hủy sửa
+    document.querySelectorAll('.cancel-edit').forEach(btn => {
+        btn.addEventListener('click', function () {
+            var cell = this.closest('td');
+            cell.querySelector('.cat-label').classList.remove('d-none');
+            cell.querySelector('.edit-form').classList.add('d-none');
+        });
+    });
+
+    // Xóa với modal xác nhận (chắc chắn submit đúng form dòng đã bấm)
+    let deleteForm = null;
+    document.querySelectorAll('.delete-cat').forEach(btn => {
+        btn.addEventListener('click', function () {
+            // Lấy form của đúng dòng này
+            deleteForm = this.closest('form.delete-form');
+            var name = this.getAttribute('data-name');
+            document.getElementById('deleteCategoryName').innerText = name;
+            var modal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
+            modal.show();
+        });
+    });
+
+    document.getElementById('confirmDeleteBtn').addEventListener('click', function () {
+        if (deleteForm) {
+            deleteForm.submit();
+            deleteForm = null;
+        }
+    });
+</script>
+}

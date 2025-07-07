@@ -1,0 +1,1 @@
+﻿using Microsoft.AspNetCore.Mvc.RazorPages;namespace DNU.IdeaSpark.Views.Admin.CategoryManagement;public class Index : PageModel{    public void OnGet()    {            }}

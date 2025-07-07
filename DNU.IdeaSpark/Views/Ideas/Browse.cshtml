@@ -1,0 +1,136 @@
+﻿@model DNU.IdeaSpark.Models.ViewModels.Ideas.BrowseIdeasViewModel
+@{
+    ViewData["Title"] = "Danh sách ý tưởng";
+}
+
+<div class="container mt-5 mb-5">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+        <h3 class="text-primary mb-3">Danh sách Ý tưởng</h3>
+
+        <form class="d-flex gap-2" method="get">
+            <input type="text" name="search" class="form-control" placeholder="Tìm kiếm ý tưởng..." value="@Model.Search" />
+
+            <select name="categoryId" class="form-select" style="min-width:150px">
+                <option value="">Tất cả danh mục</option>
+                @foreach (var cat in Model.Categories)
+                {
+                    if (Model.SelectedCategoryId == cat.CategoryId)
+                    {
+                        <option value="@cat.CategoryId" selected="selected">@cat.Name</option>
+                    }
+                    else
+                    {
+                        <option value="@cat.CategoryId">@cat.Name</option>
+                    }
+                }
+            </select>
+
+            <select name="status" class="form-select" style="min-width:150px">
+                @foreach (var st in Model.Statuses)
+                {
+                    if (Model.SelectedStatus == st)
+                    {
+                        <option value="@st" selected="selected">@(st == "All" ? "Tất cả trạng thái" : st)</option>
+                    }
+                    else
+                    {
+                        <option value="@st">@(st == "All" ? "Tất cả trạng thái" : st)</option>
+                    }
+                }
+            </select>
+
+            <select name="sort" class="form-select" style="min-width:130px">
+                @if (string.IsNullOrEmpty(Model.Sort))
+                {
+                    <option value="" selected="selected">Mới nhất</option>
+                }
+                else
+                {
+                    <option value="">Mới nhất</option>
+                }
+                @if (Model.Sort == "votes")
+                {
+                    <option value="votes" selected="selected">Bình chọn nhiều</option>
+                }
+                else
+                {
+                    <option value="votes">Bình chọn nhiều</option>
+                }
+                @if (Model.Sort == "comments")
+                {
+                    <option value="comments" selected="selected">Bình luận nhiều</option>
+                }
+                else
+                {
+                    <option value="comments">Bình luận nhiều</option>
+                }
+            </select>
+
+            <button type="submit" class="btn btn-outline-primary">Lọc</button>
+        </form>
+    </div>
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Tiêu đề</th>
+                        <th>Danh mục</th>
+                        <th>Người gửi</th>
+                        <th>Ngày gửi</th>
+                        <th>Trạng thái</th>
+                        <th><i class="bi bi-hand-thumbs-up"></i></th>
+                        <th><i class="bi bi-chat-left-text"></i></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                @if (Model.Ideas.Any())
+                {
+                    foreach (var idea in Model.Ideas)
+                    {
+                        <tr>
+                            <td>
+                                <a href="@Url.Action("Details", "Ideas", new { id = idea.IdeaId })" class="fw-semibold">@idea.Title</a>
+                            </td>
+                            <td>@idea.CategoryName</td>
+                            <td>@idea.SubmitterName</td>
+                            <td>@idea.CreatedAt.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                <span class="badge bg-@(GetStatusColor(idea.Status))">@idea.Status</span>
+                            </td>
+                            <td>@idea.VoteCount</td>
+                            <td>@idea.CommentCount</td>
+                            <td>
+                                <a href="@Url.Action("Details", "Ideas", new { id = idea.IdeaId })" class="btn btn-sm btn-outline-info">Chi tiết</a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="8" class="text-center text-muted">Không có ý tưởng nào phù hợp.</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@functions{
+    public string GetStatusColor(string status)
+    {
+        return status switch
+        {
+            "Received" => "secondary",
+            "Reviewing" => "info",
+            "Approved" => "success",
+            "Implemented" => "primary",
+            "Rejected" => "danger",
+            "Duplicate" => "warning",
+            _ => "secondary"
+        };
+    }
+}

@@ -1,0 +1,97 @@
+﻿@model DNU.IdeaSpark.Models.ViewModels.Admin.IdeaModerationDetailViewModel
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
+    ViewData["Title"] = "Chi tiết ý tưởng";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var statusSelect = new List<SelectListItem>
+    {
+        new SelectListItem("Mới nhận", "Received"),
+        new SelectListItem("Đang xem xét", "Under Review"),
+        new SelectListItem("Đã tiếp thu/Chấp thuận", "Approved"),
+        new SelectListItem("Đang triển khai", "In Progress"),
+        new SelectListItem("Đã hoàn thành", "Implemented"),
+        new SelectListItem("Từ chối/Không khả thi", "Rejected"),
+        new SelectListItem("Trùng lặp", "Duplicate")
+    };
+    var adminOnlyStatus = new[] { "Approved", "Implemented", "Completed" };
+}
+
+<div class="container my-4">
+    <h2 class="mb-3">Chi tiết ý tưởng</h2>
+    <div class="card shadow-sm p-4 mb-4">
+        <div class="mb-2"><b>Tiêu đề:</b> @Model.Title</div>
+        <div class="mb-2"><b>Danh mục:</b> @Model.Category</div>
+        <div class="mb-2"><b>Người gửi:</b> @Model.SubmittedBy</div>
+        <div class="mb-2"><b>Ngày gửi:</b> @Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</div>
+        <div class="mb-2"><b>Trạng thái hiện tại:</b> <span class="badge badge-info">@Model.Status</span></div>
+        <div class="mb-2"><b>Nội dung:</b></div>
+        <div class="border rounded p-2 mb-2" style="background:#f9f9f9;">
+            @Model.Description
+        </div>
+        @if (Model.Attachments != null && Model.Attachments.Any())
+        {
+            <div class="mb-2"><b>File đính kèm:</b></div>
+            <ul>
+                @foreach(var file in Model.Attachments)
+                {
+                    <li>
+                        <a href="@file.FileUrl" target="_blank">@file.FileType</a>
+                    </li>
+                }
+            </ul>
+        }
+    </div>
+
+    <div class="card shadow-sm p-4 mb-4">
+        <h4>Cập nhật trạng thái</h4>
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger">@ViewBag.Error</div>
+        }
+        @if (ViewBag.Success != null)
+        {
+            <div class="alert alert-success">@ViewBag.Success</div>
+        }
+        <form asp-action="UpdateStatus" method="post">
+            <input type="hidden" name="id" value="@Model.IdeaId" />
+            <div class="form-group mb-3">
+                <label>Trạng thái mới <span class="text-danger">*</span></label>
+                <select name="newStatus" class="form-control" required>
+                    <option value="">--Chọn--</option>
+                    @foreach (var item in statusSelect)
+                    {
+                        // Nếu là trạng thái chỉ dành cho admin và user không phải admin thì ẩn
+                        if (adminOnlyStatus.Contains(item.Value) && !User.IsInRole("Admin")) { continue; }
+                        <option value="@item.Value">@item.Text</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group mb-3">
+                <label>Ghi chú/Lý do (nếu có)</label>
+                <textarea name="note" class="form-control" rows="2"></textarea>
+            </div>
+            <button type="submit" class="btn btn-success">Cập nhật trạng thái</button>
+            <a class="btn btn-secondary ml-2" href="@Url.Action("Index", "IdeaModeration", new { area = "Admin" })">Quay lại</a>
+        </form>
+    </div>
+
+    @if (Model.StatusHistories != null && Model.StatusHistories.Any())
+    {
+        <div class="card shadow-sm p-4">
+            <h4>Lịch sử trạng thái</h4>
+            <ul class="timeline">
+                @foreach(var h in Model.StatusHistories)
+                {
+                    <li>
+                        <span class="badge badge-secondary">@h.Status</span>
+                        <span>lúc @h.ChangedAt.ToString("dd/MM/yyyy HH:mm")</span>
+                        <span>bởi <b>@h.ChangedBy</b></span>
+                        @if (!string.IsNullOrEmpty(h.Notes))
+                        { <span> - <em>@h.Notes</em></span> }
+                    </li>
+                }
+            </ul>
+        </div>
+    }
+</div>

@@ -1,0 +1,27 @@
+﻿@model DNU.IdeaSpark.Models.ViewModels.Admin.UserManagementViewModel
+@{
+    ViewData["Title"] = "Sửa người dùng";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+<div class="container mt-4">
+    <div class="card p-4">
+        <h3 class="mb-4 text-primary"><i class="bi bi-pencil-square"></i> Sửa thông tin người dùng</h3>
+        <form asp-action="Edit" method="post">
+            <input type="hidden" asp-for="UserId" />
+            <div class="mb-3">
+                <label asp-for="FullName" class="form-label">Họ và tên</label>
+                <input asp-for="FullName" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label">Email</label>
+                <input asp-for="Email" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label asp-for="Department" class="form-label">Khoa/Phòng</label>
+                <input asp-for="Department" class="form-control" />
+            </div>
+            <button type="submit" class="btn btn-primary"><i class="bi bi-check2-circle"></i> Lưu thay đổi</button>
+            <a asp-action="Index" class="btn btn-secondary ms-2">Quay lại</a>
+        </form>
+    </div>
+</div>

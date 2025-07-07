@@ -1,0 +1,191 @@
+﻿@model DNU.IdeaSpark.Models.ViewModels.Admin.ReportDashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard Báo Cáo Nhanh";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<style>
+    .dashboard-title {
+        font-size: 2.4rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        margin-bottom: 32px;
+        text-align: center;
+        color: #1953a3;
+    }
+    .stat-card {
+        border-radius: 18px;
+        box-shadow: 0 2px 12px rgba(60,110,200,.10);
+        transition: box-shadow .2s;
+    }
+    .stat-card:hover {
+        box-shadow: 0 4px 24px rgba(50,90,160,.15);
+    }
+    .icon-circle {
+        border-radius: 50%;
+        width: 46px;
+        height: 46px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.7rem;
+        margin-bottom: 8px;
+        color: #fff;
+    }
+    .icon-idea { background: #0d6efd; }
+    .icon-user { background: #f9b017; }
+    .icon-comment { background: #38bdf8; }
+    .icon-time { background: #22c55e; }
+    .state-dot {
+        display: inline-block;
+        width: 13px;
+        height: 13px;
+        border-radius: 50%;
+        margin-right: 6px;
+        vertical-align: middle;
+    }
+    .state-Received { background: #adb5bd;}
+    .state_Reviewing { background: #0dcaf0;}
+    .state_Approved { background: #198754;}
+    .state_Implemented { background: #22c55e;}
+    .state_Completed { background: #198754;}
+    .state_Rejected { background: #ef4444;}
+    .state_Duplicate { background: #f59e42;}
+    @@media (max-width: 700px) {
+        .dashboard-title { font-size: 1.5rem;}
+    }
+</style>
+
+<div class="dashboard-title">
+    <i class="bi bi-bar-chart-line-fill"></i> Dashboard Báo Cáo Nhanh
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-3 col-6">
+        <div class="card stat-card text-center py-3">
+            <div class="icon-circle icon-idea mx-auto mb-1"><i class="bi bi-lightbulb-fill"></i></div>
+            <div class="card-header border-0 bg-white fw-bold text-secondary">Tổng số ý tưởng</div>
+            <div class="card-body pt-1 pb-0">
+                <h2 class="card-title text-primary mb-0">@Model.TotalIdeas</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="card stat-card text-center py-3">
+            <div class="icon-circle icon-user mx-auto mb-1"><i class="bi bi-people-fill"></i></div>
+            <div class="card-header border-0 bg-white fw-bold text-secondary">Người dùng</div>
+            <div class="card-body pt-1 pb-0">
+                <h2 class="card-title text-warning mb-0">@Model.TotalUsers</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="card stat-card text-center py-3">
+            <div class="icon-circle icon-comment mx-auto mb-1"><i class="bi bi-chat-dots-fill"></i></div>
+            <div class="card-header border-0 bg-white fw-bold text-secondary">Bình luận</div>
+            <div class="card-body pt-1 pb-0">
+                <h2 class="card-title text-info mb-0">@Model.TotalComments</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="card stat-card text-center py-3">
+            <div class="icon-circle icon-time mx-auto mb-1"><i class="bi bi-clock-history"></i></div>
+            <div class="card-header border-0 bg-white fw-bold text-secondary">TG Xử lý TB (ngày)</div>
+            <div class="card-body pt-1 pb-0">
+                <h2 class="card-title text-success mb-0">@Model.AverageProcessTimeDays.ToString("0.0")</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6 mb-3 mb-md-0">
+        <div class="card p-3 h-100">
+            <h5 class="mb-3 text-primary"><i class="bi bi-kanban"></i> Ý tưởng theo trạng thái</h5>
+            <ul class="list-group list-group-flush">
+                @foreach(var kv in Model.IdeaByStatus)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>
+                            <span class="state-dot state-@kv.Key.Replace(" ", "_")"></span>
+                            @kv.Key
+                        </span>
+                        <span class="fw-bold">@kv.Value</span>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card p-3 h-100">
+            <h5 class="mb-3 text-primary"><i class="bi bi-tags-fill"></i> Ý tưởng theo danh mục</h5>
+            <ul class="list-group list-group-flush">
+                @foreach(var kv in Model.IdeaByCategory)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>@kv.Key</span>
+                        <span class="fw-bold">@kv.Value</span>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-lg-6 mb-3 mb-lg-0">
+        <div class="card p-3 h-100">
+            <h5 class="mb-3 text-primary"><i class="bi bi-lightbulb"></i> Top 5 Ý tưởng nổi bật</h5>
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Tiêu đề</th>
+                        <th>Vote</th>
+                        <th>Bình luận</th>
+                        <th>Trạng thái</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach(var idea in Model.TopIdeas)
+                    {
+                        <tr>
+                            <td>
+                                <i class="bi bi-star-fill text-warning"></i>
+                                @idea.Title
+                            </td>
+                            <td class="fw-bold text-primary">@idea.VoteCount</td>
+                            <td class="fw-bold text-info">@idea.CommentCount</td>
+                            <td>
+                                <span class="badge px-2 bg-secondary">@idea.Status</span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card p-3 h-100">
+            <h5 class="mb-3 text-primary"><i class="bi bi-trophy-fill"></i> Top 5 Người dùng đóng góp</h5>
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th><i class="bi bi-person-badge-fill"></i> Tên</th>
+                        <th><i class="bi bi-award-fill"></i> Điểm</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach(var user in Model.TopUsers)
+                    {
+                        <tr>
+                            <td class="fw-bold">@user.FullName</td>
+                            <td class="fw-bold text-warning">@user.Points</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+

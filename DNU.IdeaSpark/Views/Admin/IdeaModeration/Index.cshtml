@@ -1,0 +1,63 @@
+﻿@model List<DNU.IdeaSpark.Models.ViewModels.Admin.IdeaModerationViewModel>
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Quản lý & Kiểm duyệt Ý tưởng";
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-11">
+            <div class="card shadow rounded-4">
+                <div class="card-body">
+                    <h2 class="mb-4 fw-bold text-primary text-center">Quản lý & Kiểm duyệt Ý tưởng</h2>
+                    <div class="table-responsive">
+                        <table class="table table-hover table-bordered rounded-3 align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Tiêu đề</th>
+                                    <th>Danh mục</th>
+                                    <th>Người gửi</th>
+                                    <th>Trạng thái</th>
+                                    <th>Ngày gửi</th>
+                                    <th>Bình chọn</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="fw-semibold">@item.Title</td>
+                                    <td>@item.Category</td>
+                                    <td>@item.SubmittedBy</td>
+                                    <td>
+                                        <span class="badge
+                                            @(item.Status == "Implemented" ? "bg-success" :
+                                              item.Status == "Approved" ? "bg-primary" :
+                                              item.Status == "Rejected" ? "bg-danger" :
+                                              item.Status == "Duplicate" ? "bg-warning text-dark" :
+                                              "bg-secondary")">
+                                            @item.Status
+                                        </span>
+                                    </td>
+                                    <td>@item.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                    <td>@item.VoteCount</td>
+                                    <td>
+                                        <a class="btn btn-outline-primary btn-sm rounded-3 px-3"
+                                           href="@Url.Action("Details", "IdeaModeration", new { area = "Admin", id = item.IdeaId })">
+                                            Chi tiết
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="mt-4 text-center small text-muted">
+                        © 2025 Đại học Đại Nam - DNU IdeaSpark
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

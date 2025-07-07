@@ -1,0 +1,50 @@
+﻿@model IEnumerable<DNU.IdeaSpark.Models.ViewModels.Admin.UserManagementViewModel>
+
+@{
+    ViewData["Title"] = "Quản lý người dùng";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4">Quản lý người dùng</h2>
+
+    <table class="table table-bordered table-striped">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Họ và tên</th>
+            <th>Email</th>
+            <th>Khoa/Phòng</th>
+            <th>Vai trò</th>
+            <th>Hoạt động</th>
+        </tr>
+        </thead>
+        <tbody>
+        @if (Model.Any())
+        {
+            var index = 1;
+            foreach (var user in Model)
+            {
+                <tr>
+                    <td>@index</td>
+                    <td>@user.FullName</td>
+                    <td>@user.Email</td>
+                    <td>@user.Department</td>
+                    <td>@string.Join(", ", user.Roles)</td>
+                    <td>
+                        <a asp-controller="UserManagement" asp-action="Edit" asp-route-id="@user.UserId" class="btn btn-sm btn-primary">Sửa</a>
+                        <a asp-controller="UserManagement" asp-action="Delete" asp-route-id="@user.UserId" class="btn btn-sm btn-danger" onclick="return confirm('Xác nhận xóa tài khoản này?');">Xóa</a>
+                    </td>
+                </tr>
+                index++;
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="6" class="text-center text-muted">Chưa có người dùng nào.</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,16 @@
+﻿@model DNU.IdeaSpark.Models.ViewModels.Admin.UserManagementViewModel
+@{
+    ViewData["Title"] = "Xóa người dùng";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+<div class="container mt-4">
+    <div class="card p-4 border-danger">
+        <h4 class="mb-3 text-danger"><i class="bi bi-exclamation-triangle"></i> Xác nhận xóa người dùng</h4>
+        <p>Bạn có chắc muốn xóa tài khoản: <strong>@Model.FullName</strong> (<span class="text-muted">@Model.Email</span>)?</p>
+        <form asp-action="Delete" method="post">
+            <input type="hidden" asp-for="UserId" />
+            <button type="submit" class="btn btn-danger"><i class="bi bi-trash-fill"></i> Xóa</button>
+            <a asp-action="Index" class="btn btn-secondary ms-2">Hủy</a>
+        </form>
+    </div>
+</div>

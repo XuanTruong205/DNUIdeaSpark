@@ -1,0 +1,19 @@
+body { font-family: Arial, sans-serif; }
+.container { width: 80%; margin: 0 auto; }
+nav a { margin: 0 10px; }
+.custom-nav-link {
+    color: #1a73e8;
+    font-weight: 500;
+    border-radius: 20px;
+    padding: 6px 16px;
+    transition: all 0.3s ease-in-out;
+}
+
+.custom-nav-link:hover,
+.custom-nav-link:focus,
+.custom-nav-link.active {
+    background-color: #1a73e8;
+    color: white !important;
+    text-decoration: none;
+}
+

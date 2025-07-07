@@ -1,0 +1,153 @@
+﻿@model DNU.IdeaSpark.Models.ViewModels.Ideas.IdeaDetailViewModel
+@{
+    ViewData["Title"] = "Chi tiết ý tưởng";
+    var idea = Model.Idea;
+    bool isLoggedIn = Context.Session.GetInt32("UserId") != null;
+}
+
+<div class="container mt-5 mb-5">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow p-4 mb-4">
+                <h3 class="text-primary">@idea.Title</h3>
+                <p class="mb-1 text-muted">
+                    <span class="me-3">
+                        <i class="bi bi-person-circle"></i>
+                        <b>Người gửi:</b>
+                        <span>@Model.SubmitterUserName</span>
+                    </span>
+                    <span class="me-3"><i class="bi bi-calendar"></i> @idea.CreatedAt.ToString("dd/MM/yyyy HH:mm")</span>
+                    <span class="me-3"><i class="bi bi-bookmark"></i> <b>Danh mục:</b> @idea.Category.Name</span>
+                </p>
+                <hr />
+                <p>@idea.Description</p>
+                @if (idea.Attachments != null && idea.Attachments.Any())
+                {
+                    <hr />
+                    <p>
+                        <i class="bi bi-paperclip"></i> <b>Tệp đính kèm:</b>
+                        @foreach (var att in idea.Attachments)
+                        {
+                            <a href="@att.FileUrl" target="_blank">@System.IO.Path.GetFileName(att.FileUrl)</a><span>&nbsp</span>;
+                        }
+                    </p>
+                }
+                <hr />
+                <div class="d-flex gap-3 align-items-center">
+                    <span class="badge bg-@GetStatusColor(idea.Status) px-3 py-2">@idea.Status</span>
+                    <span><i class="bi bi-hand-thumbs-up"></i> <b>@idea.VoteCount</b> lượt bình chọn</span>
+                    <span><i class="bi bi-chat-left-text"></i> <b>@idea.CommentCount</b> bình luận</span>
+    
+                    @if (isLoggedIn)
+                    {
+                        if (!Model.HasVoted)
+                        {
+                            <form method="post" asp-action="Upvote" asp-route-id="@idea.IdeaId" class="d-inline ms-2">
+                                <button type="submit" class="btn btn-outline-success btn-sm">
+                                    <i class="bi bi-hand-thumbs-up"></i> Bình chọn
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <span class="badge bg-success ms-2"><i class="bi bi-check2"></i> Bạn đã bình chọn</span>
+                        }
+                    }
+                    else
+                    {
+                        <span class="ms-2 text-muted"><i class="bi bi-info-circle"></i> Đăng nhập để bình chọn</span>
+                    }
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light fw-semibold">Lịch sử trạng thái</div>
+                <ul class="list-group list-group-flush">
+                    @if (Model.StatusHistories.Any())
+                    {
+                        @foreach (var h in Model.StatusHistories)
+                        {
+                            <li class="list-group-item">
+                                <span class="badge bg-@GetStatusColor(h.Status) me-2">@h.Status</span>
+                                <span class="text-muted">@h.StatusChangedAt.ToString("dd/MM/yyyy HH:mm")</span>
+                                <span class="ms-2">
+                                    <i class="bi bi-person"></i>
+                                    @h.ChangedByUser?.FullName
+                                </span>
+                                @if (!string.IsNullOrEmpty(h.Notes))
+                                {
+                                    <span class="ms-2 text-secondary">- @h.Notes</span>
+                                }
+                            </li>
+                        }
+                    }
+                    else
+                    {
+                        <li class="list-group-item text-muted fst-italic">Chưa có thay đổi trạng thái.</li>
+                    }
+                </ul>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light fw-semibold">Bình luận</div>
+                <div class="card-body">
+                    @if (Model.Comments.Any())
+                    {
+                        @foreach (var cmt in Model.Comments)
+                        {
+                            <div class="mb-3">
+                                <b>@(!string.IsNullOrEmpty(cmt.AuthorName) ? cmt.AuthorName : "Ẩn danh")</b>
+                                <span class="text-muted ms-2" style="font-size:small;">
+                                    @cmt.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                                </span>
+                                <div>@cmt.Content</div>
+                                @* Nếu muốn reply comment, có thể thêm form trả lời tại đây *@
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-muted fst-italic">Chưa có bình luận nào.</div>
+                    }
+                </div>
+            </div>
+
+            @if (isLoggedIn)
+            {
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-light fw-semibold">Bình luận mới</div>
+                    <div class="card-body">
+                        <form method="post" asp-action="AddComment" asp-controller="Ideas">
+                            <input type="hidden" name="ideaId" value="@idea.IdeaId" />
+                            <div class="mb-3">
+                                <textarea name="content" class="form-control" rows="3" placeholder="Nhập bình luận..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Gửi bình luận</button>
+                        </form>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info">Vui lòng <a href="/Account/Login">đăng nhập</a> để bình luận hoặc bình chọn cho ý tưởng này.</div>
+            }
+            
+        </div>
+    </div>
+</div>
+
+@functions {
+    public string GetStatusColor(string status)
+    {
+        return status switch
+        {
+            "Received" => "secondary",
+            "Reviewing" => "info",
+            "Approved" => "success",
+            "Implemented" => "primary",
+            "Rejected" => "danger",
+            "Duplicate" => "warning",
+            _ => "secondary"
+        };
+    }
+}

@@ -1,0 +1,143 @@
+﻿@model DNU.IdeaSpark.Models.ViewModels.Admin.AdminLoginViewModel
+
+@{
+    ViewData["Title"] = "Đăng nhập quản trị";
+    Layout = null;
+}
+<style>
+    body {
+        background: url('/images/background-login.jpg') no-repeat center center fixed;
+        background-size: cover;
+        min-height: 100vh;
+        margin: 0;
+        font-family: 'Segoe UI', Arial, sans-serif;
+    }
+    .glassy-login-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .glassy-login-card {
+        background: rgba(255,255,255,0.13);
+        border-radius: 18px;
+        box-shadow: 0 8px 32px 0 rgba(31,38,135,0.37);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        padding: 36px 38px 26px 38px;
+        width: 100%;
+        max-width: 370px;
+        color: #fff;
+        border: 1.5px solid rgba(255,255,255,0.18);
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .glassy-login-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 18px;
+        letter-spacing: 1px;
+        color: #fff;
+        text-shadow: 0 1px 12px #0002;
+    }
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 16px;
+    }
+    .glassy-login-card label {
+        color: #fff;
+        font-weight: 500;
+        margin-bottom: 5px;
+        font-size: 1rem;
+        padding-left: 2px;
+    }
+    .glassy-login-card .form-control {
+        border-radius: 10px;
+        padding: 12px;
+        background: rgba(255,255,255,0.25);
+        border: 1.2px solid rgba(255,255,255,0.22);
+        font-size: 1.09rem;
+        color: #222;
+        margin-bottom: 0;
+        outline: none;
+        transition: background .2s, border .2s;
+    }
+    .glassy-login-card .form-control:focus {
+        background: #fff;
+        border-color: #3871f3;
+    }
+    .validation-message {
+        color: #ffd1d1;
+        font-size: 0.97rem;
+        margin-top: 2px;
+        margin-left: 2px;
+        font-weight: 500;
+        min-height: 20px;
+    }
+    .glassy-links {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 13px;
+        font-size: 0.99rem;
+        margin-top: 4px;
+    }
+    .glassy-link {
+        color: #98d7fa;
+        text-decoration: none;
+        font-weight: 500;
+    }
+    .glassy-link:hover {
+        text-decoration: underline;
+    }
+    .glassy-btn {
+        width: 100%;
+        background: #3871f3;
+        color: #fff;
+        font-weight: 600;
+        border: none;
+        padding: 12px;
+        border-radius: 10px;
+        font-size: 1.09rem;
+        margin-top: 5px;
+        transition: background .2s;
+        box-shadow: 0 2px 10px #3871f325;
+    }
+    .glassy-btn:hover {
+        background: #2553b8;
+    }
+    @@media (max-width: 600px) {
+        .glassy-login-card { padding: 15px 4px; }
+        .glassy-login-title { font-size: 1.45rem; }
+    }
+    .auth-card .form-control {
+        color: #fff !important;
+    }
+</style>
+<div class="glassy-login-container">
+    <div class="glassy-login-card">
+        <div class="glassy-login-title">DNU IdeaSpark – Admin</div>
+        @if (!string.IsNullOrEmpty(Model?.ErrorMessage))
+        {
+            <div class="alert alert-danger" style="margin-bottom:16px; border-radius:8px; background:rgba(255,50,50,0.13); color:#d20f1b; font-weight:500; text-align:center;">
+                @Model.ErrorMessage
+            </div>
+        }
+        <form asp-action="Index" method="post" novalidate>
+            <div class="form-group">
+                <label asp-for="Email"></label>
+                <input asp-for="Email" class="form-control" placeholder="Email quản trị" autocomplete="username" />
+                <span asp-validation-for="Email" class="validation-message"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Password"></label>
+                <input asp-for="Password" class="form-control" placeholder="Mật khẩu" autocomplete="current-password" />
+                <span asp-validation-for="Password" class="validation-message"></span>
+            </div>
+            <button type="submit" class="glassy-btn">Đăng nhập Quản trị</button>
+        </form>
+    </div>
+</div>

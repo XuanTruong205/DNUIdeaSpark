@@ -1,0 +1,63 @@
+﻿@model DNU.IdeaSpark.Models.ViewModels.Account.ProfileViewModel
+
+@{
+    ViewData["Title"] = "Hồ sơ cá nhân";
+}
+
+<div class="d-flex flex-column min-vh-100">
+    <main class="container mt-5 mb-5 flex-grow-1">
+        <div class="row">
+            <div class="col-md-4 text-center">
+                <img src="@(!string.IsNullOrEmpty(Model.AvatarUrl) ? Model.AvatarUrl : Url.Content("~/images/default-avatar.jpg"))"
+                     alt="Avatar"
+                     class="rounded-circle mb-3"
+                     width="150" height="150" />
+
+                <h4>@Model.FullName</h4>
+                <p class="text-muted">@Model.Department</p>
+
+                <hr />
+                <h6 class="text-primary">🎖 Tổng điểm: @Model.TotalPoints</h6>
+
+                <div class="mt-2">
+                    @foreach (var badge in Model.Badges)
+                    {
+                    <span title="@badge.Description">
+                        <img src="@badge.IconUrl" alt="@badge.Name" style="width:32px;" />
+                        @badge.Name
+                    </span>
+                    }
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <h5 class="mb-3">💡 Ý tưởng đã đóng góp</h5>
+                @if (Model.ContributedIdeas != null && Model.ContributedIdeas.Any())
+                {
+                    <ul class="list-group">
+                        @foreach (var idea in Model.ContributedIdeas)
+                        {
+                            <li class="list-group-item">
+                                <strong>@idea.Title</strong><br />
+                                <small class="text-muted">Gửi lúc: @idea.SubmittedAt.ToString("dd/MM/yyyy HH:mm") | 👍 @idea.Votes bình chọn</small>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p class="text-muted">Bạn chưa gửi ý tưởng nào.</p>
+                }
+                @foreach (var badge in Model.Badges)
+                {
+                    <span title="@badge.Description">
+                        <img src="@badge.IconUrl" alt="@badge.Name" style="width:32px;" />
+                        @badge.Name
+                    </span>
+                }
+            </div>
+        </div>
+    </main>
+
+    <footer class="text-center text-muted mt-auto mb-3"></footer>
+</div>
